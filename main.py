@@ -48,7 +48,7 @@ def has_vowels(word):
     return has_vowels
 
 # load individual dictionary files from disk into a single dictionary in memory
-def load_dictionary(path, dictionary):
+def load_dictionary(path, dictionary, letters):
     with open(path, "r") as file:
         while True:
             line = file.readline().rstrip()
@@ -63,9 +63,16 @@ def load_dictionary(path, dictionary):
             key = line.lower()
             if has_vowels(key):
                 if key in dictionary:
-                    dictionary[key] = dictionary[key] + 1
+                    tup = dictionary[key]
+                    level = tup[0]
+                    word_score = tup[1]
+                    tup = [level+1, word_score]
+                    dictionary[key] = tup
                 else:
-                    dictionary[key] = 1
+                    tup = []
+                    tup.append(1)
+                    tup.append(score(key, letters))
+                    dictionary[key] = tup
         
     return dictionary
 
@@ -110,17 +117,17 @@ else:
     output = open(output_path, 'w')
 
 dictionary = {}
-dictionary = load_dictionary(os.path.join("word_files", "wordlist.txt"), dictionary)
-dictionary = load_dictionary(os.path.join("word_files", "wordlist.txt"), dictionary)
-dictionary = load_dictionary(os.path.join("word_files", "wordlist.10000.txt"), dictionary)
-dictionary = load_dictionary(os.path.join("word_files", "words_alpha.txt"), dictionary)
-dictionary = load_dictionary(os.path.join("word_files", "words.txt"), dictionary)
-dictionary = load_dictionary(os.path.join("word_files", "usa2.txt"), dictionary)
-dictionary = load_dictionary(os.path.join("word_files", "usa.txt"), dictionary)
-dictionary = load_dictionary(os.path.join("word_files", "ukenglish.txt"), dictionary)
-dictionary = load_dictionary(os.path.join("word_files", "english2.txt"), dictionary)
-dictionary = load_dictionary(os.path.join("word_files", "english3.txt"), dictionary)
-dictionary = load_dictionary(os.path.join("word_files", "engmix.txt"), dictionary)
+dictionary = load_dictionary(os.path.join("word_files", "wordlist.txt"), dictionary, all_letters)
+dictionary = load_dictionary(os.path.join("word_files", "wordlist.txt"), dictionary, all_letters)
+dictionary = load_dictionary(os.path.join("word_files", "wordlist.10000.txt"), dictionary, all_letters)
+dictionary = load_dictionary(os.path.join("word_files", "words_alpha.txt"), dictionary, all_letters)
+dictionary = load_dictionary(os.path.join("word_files", "words.txt"), dictionary, all_letters)
+dictionary = load_dictionary(os.path.join("word_files", "usa2.txt"), dictionary, all_letters)
+dictionary = load_dictionary(os.path.join("word_files", "usa.txt"), dictionary, all_letters)
+dictionary = load_dictionary(os.path.join("word_files", "ukenglish.txt"), dictionary, all_letters)
+dictionary = load_dictionary(os.path.join("word_files", "english2.txt"), dictionary, all_letters)
+dictionary = load_dictionary(os.path.join("word_files", "english3.txt"), dictionary, all_letters)
+dictionary = load_dictionary(os.path.join("word_files", "engmix.txt"), dictionary, all_letters)
 
 beehive(dictionary, letters, center, args.debug, output_path, level, is_stdout)
 
@@ -160,11 +167,14 @@ output_log(output, "{:<32s} {:>6s}".format("words matched with all letters:", st
 # remove words that are not in more than 'level' dictionaries
 # if level is 0, inclue all anwers
 likely_words = {}
+total_score = 0
 for word in matched:
-    if level == 0 or matched[word] >= level:
+    if level == 0 or matched[word][0] >= level:
         likely_words[word] = matched[word]
+        total_score += matched[word][1]
 
 output_log(output, "{:<32s} {:>6s}".format("likely good word:", str(len(likely_words))))
+output_log(output, "{:<32s} {:>6s}".format("total score:", str(total_score)))
 
 h = {}
 for letter in all_letters:
@@ -174,21 +184,13 @@ sorted_answers = []
 # sort by length
 for word in sorted(likely_words, key=lambda word: len(word), reverse=True):
     sorted_answers.append(word)
-
-total_score = 0
-for word in sorted_answers:
     h[word[0]].append(word)
-    word_score = score(word, all_letters)
-    total_score += word_score
-
-output_log(output, "{:<32s} {:>6s}".format("total score:", str(total_score)))
 
 for key in h.keys():
     output_log(output, "{:21s} \"{:<1s}\"        {:>4s} {:>4s}".format("words that begin with", key.upper(), "score", "level"))
     output_log(output, "{:<32s} {:>4s} {:>4s}".format("-------------------------", "-----", "-----"))
     for word in h[key]:
-        word_score = score(word, all_letters)
-        output_log(output, "{:3}{:<29s} {:>4d} {:>4d}".format("=> ", word, word_score, dictionary[word]))
+        output_log(output, "{:3}{:<29s} {:>4d} {:>4d}".format("=> ", word, dictionary[word][1], dictionary[word][0]))
 
 output.close() 
 
