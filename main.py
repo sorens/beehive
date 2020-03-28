@@ -86,7 +86,7 @@ def beehive(dictionary, letters, center_letter, debug, path, level, is_stdout):
     answers = []
     return answers
 
-parser = argparse.ArgumentParser(description='beehive')
+parser = argparse.ArgumentParser(description='beehive puzzle solver')
 parser.add_argument("--letters", type=str, help="non-center letters from beehive board", required=True)
 parser.add_argument("--center", type=str, help="center letter from beehive board", required=True)
 parser.add_argument("--debug", help="enable debug output", action='store_true', default=False, required=False)
