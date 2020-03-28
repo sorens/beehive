@@ -4,6 +4,13 @@ import sys
 import argparse
 import os
 
+# debug print function
+def debug_log(output, *args):
+    message = "DEBUG => "
+    for a in args:
+        message += a
+    print(message, file=output)
+
 # Create words using letters from the hive.
 
 # Words must contain at least 4 letters.
@@ -17,7 +24,6 @@ import os
 # Longer words earn 1 point per letter.
 # Each puzzle includes at least one “pangram” which uses every letter. 
 # These are worth 7 extra points!
-
 def score(word, letters):
     if len(word) == 4:
         return 1
@@ -119,19 +125,19 @@ for word in center_matched:
     for letter in word:
         if found:
             if args.debug:
-                print("DEBUG => checking letter: '" + letter + "' in all letters: '" + all_letters + "'", file=output)
+                debug_log(output, "checking letter: '" + letter + "' in all letters: '" + all_letters + "'")
             if letter not in all_letters:
                 found = False
                 break
     
     if found:
         if args.debug:
-            print("DEBUG => " + word + " ADDED", file=output)
+            debug_log(output, "" + word + " ADDED")
         matched[word] = center_matched[word]
         found = False
     else:
         if args.debug:
-            print("DEBUG => " + word + " SKIPPED", file=output)
+            debug_log(output, "" + word + " SKIPPED")
 
 print("beehive words matched with all letters: " + str(len(matched)), file=output)
 
