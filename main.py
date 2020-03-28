@@ -74,16 +74,17 @@ print("beehive letters:      " + letters.upper(), file=output)
 print("behive center letter: " + center.upper(), file=output)
 
 dictionary = {}
-dictionary = load_dictionary("word_files/wordlist.txt", dictionary)
-dictionary = load_dictionary("word_files/wordlist.10000.txt", dictionary)
-dictionary = load_dictionary("word_files/words_alpha.txt", dictionary)
-dictionary = load_dictionary("word_files/words.txt", dictionary)
-dictionary = load_dictionary("word_files/usa2.txt", dictionary)
-dictionary = load_dictionary("word_files/usa.txt", dictionary)
-dictionary = load_dictionary("word_files/ukenglish.txt", dictionary)
-dictionary = load_dictionary("word_files/english2.txt", dictionary)
-dictionary = load_dictionary("word_files/english3.txt", dictionary)
-dictionary = load_dictionary("word_files/engmix.txt", dictionary)
+dictionary = load_dictionary(os.path.join("word_files", "wordlist.txt"), dictionary)
+dictionary = load_dictionary(os.path.join("word_files", "wordlist.txt"), dictionary)
+dictionary = load_dictionary(os.path.join("word_files", "wordlist.10000.txt"), dictionary)
+dictionary = load_dictionary(os.path.join("word_files", "words_alpha.txt"), dictionary)
+dictionary = load_dictionary(os.path.join("word_files", "words.txt"), dictionary)
+dictionary = load_dictionary(os.path.join("word_files", "usa2.txt"), dictionary)
+dictionary = load_dictionary(os.path.join("word_files", "usa.txt"), dictionary)
+dictionary = load_dictionary(os.path.join("word_files", "ukenglish.txt"), dictionary)
+dictionary = load_dictionary(os.path.join("word_files", "english2.txt"), dictionary)
+dictionary = load_dictionary(os.path.join("word_files", "english3.txt"), dictionary)
+dictionary = load_dictionary(os.path.join("word_files", "engmix.txt"), dictionary)
 
 center_matched = {}
 for word in dictionary:
