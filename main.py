@@ -42,8 +42,12 @@ def load_dictionary(path, dictionary):
                 continue
             if len(line) < 4:
                 continue
-
-            dictionary[line.lower()] = line.lower()
+            
+            key = line.lower()
+            if key in dictionary:
+                dictionary[key] = dictionary[key] + 1
+            else:
+                dictionary[key] = 1
         
     return dictionary
 
@@ -89,7 +93,7 @@ dictionary = load_dictionary(os.path.join("word_files", "engmix.txt"), dictionar
 center_matched = {}
 for word in dictionary:
     if center in word:
-        center_matched[word] = word
+        center_matched[word] = dictionary[word]
 
 print("beehive words checked: " + str(len(dictionary.keys())), file=output)
 print("beehive words with center letter '" + center.upper() + "': " + str(len(center_matched.keys())), file=output)
@@ -108,20 +112,29 @@ for word in center_matched:
     if found:
         if args.debug:
             print("DEBUG => " + word + " ADDED", file=output)
-        matched[word] = word
+        matched[word] = center_matched[word]
         found = False
     else:
         if args.debug:
             print("DEBUG => " + word + " SKIPPED", file=output)
 
 print("beehive words matched with all letters: " + str(len(matched)), file=output)
+
+# remove words that are not in more than 3 dictionaries
+likely_words = {}
+for word in matched:
+    if matched[word] > 5:
+        likely_words[word] = matched[word]
+
+print("beehive likely good word: " + str(len(likely_words)), file=output)
+
 h = {}
 for letter in all_letters:
     h[letter] = []
 
 sorted_answers = []
 # sort by length
-for word in sorted(matched, key=lambda word: len(matched[word]), reverse=True):
+for word in sorted(likely_words, key=lambda word: len(word), reverse=True):
     sorted_answers.append(word)
 
 for word in sorted_answers:
