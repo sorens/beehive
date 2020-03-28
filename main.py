@@ -53,6 +53,10 @@ def load_dictionary(path, dictionary):
         
     return dictionary
 
+def beehive(dictionary, letters, center_letter, debug, path, level, is_stdout):
+    answers = []
+    return answers
+
 parser = argparse.ArgumentParser(description='beehive')
 parser.add_argument("--letters", type=str, help="non-center letters from beehive board", required=True)
 parser.add_argument("--center", type=str, help="center letter from beehive board", required=True)
@@ -81,10 +85,7 @@ output_path = os.path.join(output_path, all_letters + "." + "txt")
 if is_stdout:
     output = sys.stdout
 else:
-    output = open(output_path, 'w') 
-
-print("beehive letters:      " + letters.upper(), file=output)
-print("behive center letter: " + center.upper(), file=output)
+    output = open(output_path, 'w')
 
 dictionary = {}
 dictionary = load_dictionary(os.path.join("word_files", "wordlist.txt"), dictionary)
@@ -98,6 +99,11 @@ dictionary = load_dictionary(os.path.join("word_files", "ukenglish.txt"), dictio
 dictionary = load_dictionary(os.path.join("word_files", "english2.txt"), dictionary)
 dictionary = load_dictionary(os.path.join("word_files", "english3.txt"), dictionary)
 dictionary = load_dictionary(os.path.join("word_files", "engmix.txt"), dictionary)
+
+beehive(dictionary, letters, center, args.debug, output_path, level, is_stdout)
+
+print("beehive letters:      " + letters.upper(), file=output)
+print("behive center letter: " + center.upper(), file=output)
 
 center_matched = {}
 for word in dictionary:
