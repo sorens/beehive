@@ -115,16 +115,30 @@ for word in center_matched:
             print("DEBUG => " + word + " SKIPPED", file=output)
 
 print("beehive words matched with all letters: " + str(len(matched)), file=output)
+h = {}
+for letter in all_letters:
+    h[letter] = []
+
 sorted_answers = []
 # sort by length
 for word in sorted(matched, key=lambda word: len(matched[word]), reverse=True):
     sorted_answers.append(word)
 
-total_score = 0
 for word in sorted_answers:
-    word_score = score(word, all_letters)
-    total_score += word_score
-    print("answer: '" + word + "', value: " + str(word_score), file=output)
+    h[word[0]].append(word)
+
+total_score = 0
+for key in h.keys():
+    print(key.upper(), file=output)
+    for word in h[key]:
+        word_score = score(word, all_letters)
+        total_score += word_score
+        print("answer: '" + word + "', value: " + str(word_score), file=output)
+
+# for word in sorted_answers:
+#     word_score = score(word, all_letters)
+#     total_score += word_score
+#     print("answer: '" + word + "', value: " + str(word_score), file=output)
 
 print("beehive total score: " + str(total_score), file=output)
 
