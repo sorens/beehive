@@ -11,15 +11,13 @@ def debug_log(output, *args):
         message += a
     print(message, file=output)
 
-# Create words using letters from the hive.
+def output_log(output, *args):
+    message = "=> "
+    for a in args:
+        message += a
+    print(message, file=output)
 
-# Words must contain at least 4 letters.
-# Words must include the center letter.
-# Our word list does not include words that are obscure, hyphenated, or proper nouns.
-# No cussing either, sorry.
-# Letters can be used more than once.
 # Score points to increase your rating.
-
 # 4-letter words are worth 1 point each.
 # Longer words earn 1 point per letter.
 # Each puzzle includes at least one “pangram” which uses every letter. 
@@ -39,6 +37,7 @@ def score(word, letters):
     
     return len(word)
 
+# load individual dictionary files from disk into a single dictionary in memory
 def load_dictionary(path, dictionary):
     with open(path, "r") as file:
         while True:
@@ -59,6 +58,12 @@ def load_dictionary(path, dictionary):
         
     return dictionary
 
+# Create words using letters from the hive.
+# Words must contain at least 4 letters.
+# Words must include the center letter.
+# Our word list does not include words that are obscure, hyphenated, or proper nouns.
+# No cussing either, sorry.
+# Letters can be used more than once.
 def beehive(dictionary, letters, center_letter, debug, path, level, is_stdout):
     answers = []
     return answers
@@ -84,7 +89,7 @@ all_letters = letters + center
 level = args.level
 
 if is_stdout == False:
-    print("beehive running")
+    output_log(sys.stdout, "behive running...")
 
 output_path = os.path.join(output_path, all_letters + "." + "txt")    
 
@@ -108,16 +113,16 @@ dictionary = load_dictionary(os.path.join("word_files", "engmix.txt"), dictionar
 
 beehive(dictionary, letters, center, args.debug, output_path, level, is_stdout)
 
-print("beehive letters:      " + letters.upper(), file=output)
-print("behive center letter: " + center.upper(), file=output)
+output_log(output, "beehive letters:      " + letters.upper())
+output_log(output, "behive center letter: " + center.upper())
 
 center_matched = {}
 for word in dictionary:
     if center in word:
         center_matched[word] = dictionary[word]
 
-print("beehive words checked: " + str(len(dictionary.keys())), file=output)
-print("beehive words with center letter '" + center.upper() + "': " + str(len(center_matched.keys())), file=output)
+output_log(output, "beehive words checked: " + str(len(dictionary.keys())))
+output_log(output, "beehive words with center letter '" + center.upper() + "': " + str(len(center_matched.keys())))
 
 matched = {}
 for word in center_matched:
@@ -139,7 +144,7 @@ for word in center_matched:
         if args.debug:
             debug_log(output, "" + word + " SKIPPED")
 
-print("beehive words matched with all letters: " + str(len(matched)), file=output)
+output_log(output, "beehive words matched with all letters: " + str(len(matched)))
 
 # remove words that are not in more than 'level' dictionaries
 # if level is 0, inclue all anwers
@@ -148,7 +153,7 @@ for word in matched:
     if level == 0 or matched[word] == level:
         likely_words[word] = matched[word]
 
-print("beehive likely good word: " + str(len(likely_words)), file=output)
+output_log(output, "beehive likely good word: " + str(len(likely_words)))
 
 h = {}
 for letter in all_letters:
@@ -164,16 +169,14 @@ for word in sorted_answers:
 
 total_score = 0
 for key in h.keys():
-    print(key.upper(), file=output)
+    output_log(output, key.upper())
     for word in h[key]:
         word_score = score(word, all_letters)
         total_score += word_score
-        # print("answer: '" + word + "', value: " + str(word_score), file=output)
-        msg = "=> ({0:2d}) {1:20s} ({2:2d})".format(word_score, word, dictionary[word])
-        print(msg, file=output)
+        output_log(output, "({0:2d}) {1:20s} ({2:2d})".format(word_score, word, dictionary[word]))
 
-print("beehive total score: " + str(total_score), file=output)
+output_log(output, "beehive total score: " + str(total_score))
 output.close() 
 
 if is_stdout == False:
-    print("beehive finished")
+    output_log(sys.stdout, "beehive finished")
