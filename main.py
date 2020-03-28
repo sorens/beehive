@@ -51,27 +51,32 @@ def load_dictionary(path, dictionary):
         
     return dictionary
 
-print("beehive running")
-
 parser = argparse.ArgumentParser(description='beehive')
 parser.add_argument("--letters", type=str, help="non-center letters from beehive board", required=True)
 parser.add_argument("--center", type=str, help="center letter from beehive board", required=True)
 parser.add_argument("--debug", help="enable debug output", action='store_true', default=False, required=False)
-parser.add_argument("--output", type=str, help="location to output answers", required=True)
+parser.add_argument("--path", type=str, help="location to output answers", required=False)
 parser.add_argument("--level", type=int, help="number of dictionary a matched word should appear in", required=False, default=5)
+parser.add_argument("--stdout", help="", action='store_true', default=False, required=False)
 args = parser.parse_args()
+is_stdout = args.stdout
 letters = args.letters.rstrip().lower()
 center = args.center.rstrip().lower()
-output_path = args.output.rstrip().lower()
+output_path = ""
+if is_stdout == False:
+    if args.path:
+        output_path = args.path.rstrip().lower()
+    else:
+        is_stdout = True
 all_letters = letters + center
 level = args.level
 
-if output_path == "":
-    output_path = os.path.join(".", "output")
+if is_stdout == False:
+    print("beehive running")
 
 output_path = os.path.join(output_path, all_letters + "." + "txt")    
 
-if output_path == "":
+if is_stdout:
     output = sys.stdout
 else:
     output = open(output_path, 'w') 
@@ -153,7 +158,7 @@ for key in h.keys():
         print(msg, file=output)
 
 print("beehive total score: " + str(total_score), file=output)
-
 output.close() 
 
-print("beehive finished")
+if is_stdout == False:
+    print("beehive finished")
