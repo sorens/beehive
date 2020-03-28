@@ -12,7 +12,7 @@ def debug_log(output, *args):
     print(message, file=output)
 
 def output_log(output, *args):
-    message = "=> "
+    message = ""
     for a in args:
         message += a
     print(message, file=output)
@@ -113,16 +113,16 @@ dictionary = load_dictionary(os.path.join("word_files", "engmix.txt"), dictionar
 
 beehive(dictionary, letters, center, args.debug, output_path, level, is_stdout)
 
-output_log(output, "beehive letters:      " + letters.upper())
-output_log(output, "behive center letter: " + center.upper())
+output_log(output, "{:<32s} {:>6s}".format("letters:", letters.upper()))
+output_log(output, "{:<32s} {:>6s}".format("center letter:", center.upper()))
 
 center_matched = {}
 for word in dictionary:
     if center in word:
         center_matched[word] = dictionary[word]
 
-output_log(output, "beehive words checked: " + str(len(dictionary.keys())))
-output_log(output, "beehive words with center letter '" + center.upper() + "': " + str(len(center_matched.keys())))
+output_log(output, "{:<32s} {:>6s}".format("words checked:", str(len(dictionary.keys()))))
+output_log(output, "{:<32s} {:>6s}".format("words with center letter:", str(len(center_matched.keys()))))
 
 matched = {}
 for word in center_matched:
@@ -144,7 +144,7 @@ for word in center_matched:
         if args.debug:
             debug_log(output, "" + word + " SKIPPED")
 
-output_log(output, "beehive words matched with all letters: " + str(len(matched)))
+output_log(output, "{:<32s} {:>6s}".format("words matched with all letters:", str(len(matched))))
 
 # remove words that are not in more than 'level' dictionaries
 # if level is 0, inclue all anwers
@@ -153,7 +153,7 @@ for word in matched:
     if level == 0 or matched[word] == level:
         likely_words[word] = matched[word]
 
-output_log(output, "beehive likely good word: " + str(len(likely_words)))
+output_log(output, "{:<32s} {:>6s}".format("likely good word:", str(len(likely_words))))
 
 h = {}
 for letter in all_letters:
@@ -164,18 +164,21 @@ sorted_answers = []
 for word in sorted(likely_words, key=lambda word: len(word), reverse=True):
     sorted_answers.append(word)
 
+total_score = 0
 for word in sorted_answers:
     h[word[0]].append(word)
+    word_score = score(word, all_letters)
+    total_score += word_score
 
-total_score = 0
+output_log(output, "{:<32s} {:>6s}".format("total score:", str(total_score)))
+
 for key in h.keys():
-    output_log(output, key.upper())
+    output_log(output, "{:21s} \"{:<1s}\"        {:>4s} {:>4s}".format("words that begin with", key.upper(), "score", "level"))
+    output_log(output, "{:<32s} {:>4s} {:>4s}".format("-------------------------", "-----", "-----"))
     for word in h[key]:
         word_score = score(word, all_letters)
-        total_score += word_score
-        output_log(output, "({0:2d}) {1:20s} ({2:2d})".format(word_score, word, dictionary[word]))
+        output_log(output, "{:3}{:<29s} {:>4d} {:>4d}".format("=> ", word, word_score, dictionary[word]))
 
-output_log(output, "beehive total score: " + str(total_score))
 output.close() 
 
 if is_stdout == False:
