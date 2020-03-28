@@ -37,6 +37,16 @@ def score(word, letters):
     
     return len(word)
 
+def has_vowels(word):
+    vowels = "aeiouy"
+    has_vowels = False
+    for letter in word:
+        if letter in vowels:
+            has_vowels = True
+            break
+
+    return has_vowels
+
 # load individual dictionary files from disk into a single dictionary in memory
 def load_dictionary(path, dictionary):
     with open(path, "r") as file:
@@ -51,10 +61,11 @@ def load_dictionary(path, dictionary):
                 continue
             
             key = line.lower()
-            if key in dictionary:
-                dictionary[key] = dictionary[key] + 1
-            else:
-                dictionary[key] = 1
+            if has_vowels(key):
+                if key in dictionary:
+                    dictionary[key] = dictionary[key] + 1
+                else:
+                    dictionary[key] = 1
         
     return dictionary
 
