@@ -152,12 +152,6 @@ for key in h.keys():
         msg = "=> ({0:2d}) {1:20s} ({2:2d})".format(word_score, word, dictionary[word])
         print(msg, file=output)
 
-
-# for word in sorted_answers:
-#     word_score = score(word, all_letters)
-#     total_score += word_score
-#     print("answer: '" + word + "', value: " + str(word_score), file=output)
-
 print("beehive total score: " + str(total_score), file=output)
 
 output.close() 
