@@ -1,5 +1,6 @@
 import sys
 import argparse
+import os
 
 # Create words using letters from the hive.
 
@@ -37,16 +38,31 @@ def load_dictionary(path, dictionary):
         
     return dictionary
 
+print("beehive running")
+
 parser = argparse.ArgumentParser(description='beehive')
 parser.add_argument("--letters", type=str, help="non-center letters from beehive board", required=True)
 parser.add_argument("--center", type=str, help="center letter from beehive board", required=True)
 parser.add_argument("--debug", help="enable debug output", action='store_true', default=False, required=False)
+parser.add_argument("--output", type=str, help="location to output answers", required=True)
 args = parser.parse_args()
 letters = args.letters.rstrip().lower()
 center = args.center.rstrip().lower()
+output_path = args.output.rstrip().lower()
 all_letters = letters + center
-print("beehive letters:      " + letters.upper())
-print("behive center letter: " + center.upper())
+
+if output_path == "":
+    output_path = os.path.join(".", "output")
+
+output_path = os.path.join(output_path, all_letters + "." + "txt")    
+
+if output_path == "":
+    output = sys.stdout
+else:
+    output = open(output_path, 'w') 
+
+print("beehive letters:      " + letters.upper(), file=output)
+print("behive center letter: " + center.upper(), file=output)
 
 dictionary = {}
 dictionary = load_dictionary("word_files/wordlist.txt", dictionary)
@@ -65,8 +81,8 @@ for word in dictionary:
     if center in word:
         center_matched[word] = word
 
-print("beehive words checked: " + str(len(dictionary.keys())))
-print("beehive words with center letter '" + center.upper() + "': " + str(len(center_matched.keys())))
+print("beehive words checked: " + str(len(dictionary.keys())), file=output)
+print("beehive words with center letter '" + center.upper() + "': " + str(len(center_matched.keys())), file=output)
 
 matched = {}
 for word in center_matched:
@@ -74,21 +90,21 @@ for word in center_matched:
     for letter in word:
         if found:
             if args.debug:
-                print("DEBUG => checking letter: '" + letter + "' in all letters: '" + all_letters + "'")
+                print("DEBUG => checking letter: '" + letter + "' in all letters: '" + all_letters + "'", file=output)
             if letter not in all_letters:
                 found = False
                 break
     
     if found:
         if args.debug:
-            print("DEBUG => " + word + " ADDED")
+            print("DEBUG => " + word + " ADDED", file=output)
         matched[word] = word
         found = False
     else:
         if args.debug:
-            print("DEBUG => " + word + " SKIPPED")
+            print("DEBUG => " + word + " SKIPPED", file=output)
 
-print("beehive words matched with all letters: " + str(len(matched)))
+print("beehive words matched with all letters: " + str(len(matched)), file=output)
 sorted_answers = []
 # sort by length
 for word in sorted(matched, key=lambda word: len(matched[word]), reverse=True):
@@ -98,6 +114,10 @@ total_score = 0
 for word in sorted_answers:
     word_score = score(word)
     total_score += word_score
-    print("answer: '" + word + "', value: " + str(word_score))
+    print("answer: '" + word + "', value: " + str(word_score), file=output)
 
-print("beehive total score: " + str(total_score))
+print("beehive total score: " + str(total_score), file=output)
+
+output.close() 
+
+print("beehive finished")
