@@ -150,7 +150,7 @@ output_log(output, "{:<32s} {:>6s}".format("words matched with all letters:", st
 # if level is 0, inclue all anwers
 likely_words = {}
 for word in matched:
-    if level == 0 or matched[word] == level:
+    if level == 0 or matched[word] >= level:
         likely_words[word] = matched[word]
 
 output_log(output, "{:<32s} {:>6s}".format("likely good word:", str(len(likely_words))))
