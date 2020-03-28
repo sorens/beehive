@@ -16,11 +16,20 @@ import os
 # Each puzzle includes at least one “pangram” which uses every letter. 
 # These are worth 7 extra points!
 
-def score(word):
+def score(word, letters):
     if len(word) == 4:
         return 1
-    else:
-        return len(word)
+    elif len(word) >= 7:
+        all_used = True
+        for letter in letters:
+            if letter not in word:
+                all_used = False
+                break
+        
+        if all_used:
+            return len(word) + 7        
+    
+    return len(word)
 
 def load_dictionary(path, dictionary):
     with open(path, "r") as file:
@@ -112,7 +121,7 @@ for word in sorted(matched, key=lambda word: len(matched[word]), reverse=True):
 
 total_score = 0
 for word in sorted_answers:
-    word_score = score(word)
+    word_score = score(word, all_letters)
     total_score += word_score
     print("answer: '" + word + "', value: " + str(word_score), file=output)
 
