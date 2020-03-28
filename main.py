@@ -125,7 +125,7 @@ print("beehive words matched with all letters: " + str(len(matched)), file=outpu
 # remove words that are not in more than 3 dictionaries
 likely_words = {}
 for word in matched:
-    if matched[word] > level:
+    if matched[word] == level:
         likely_words[word] = matched[word]
 
 print("beehive likely good word: " + str(len(likely_words)), file=output)
