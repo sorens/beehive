@@ -58,7 +58,7 @@ parser.add_argument("--letters", type=str, help="non-center letters from beehive
 parser.add_argument("--center", type=str, help="center letter from beehive board", required=True)
 parser.add_argument("--debug", help="enable debug output", action='store_true', default=False, required=False)
 parser.add_argument("--path", type=str, help="location to output answers", required=False)
-parser.add_argument("--level", type=int, help="number of dictionary a matched word should appear in", required=False, default=5)
+parser.add_argument("--level", type=int, help="number of dictionary a matched word should appear in", required=False, default=0)
 parser.add_argument("--stdout", help="", action='store_true', default=False, required=False)
 args = parser.parse_args()
 is_stdout = args.stdout
@@ -129,10 +129,11 @@ for word in center_matched:
 
 print("beehive words matched with all letters: " + str(len(matched)), file=output)
 
-# remove words that are not in more than 3 dictionaries
+# remove words that are not in more than 'level' dictionaries
+# if level is 0, inclue all anwers
 likely_words = {}
 for word in matched:
-    if matched[word] == level:
+    if level == 0 or matched[word] == level:
         likely_words[word] = matched[word]
 
 print("beehive likely good word: " + str(len(likely_words)), file=output)
