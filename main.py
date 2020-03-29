@@ -50,20 +50,40 @@ def has_vowels(word):
 
     return has_vowels
 
+def has_non_word_characters(word):
+    for letter in word:
+        value = ord(letter)
+        if value < 65:
+            return False
+        elif value > 90 and value < 97:
+            return False
+        elif value > 122 and value < 127:
+            return False
+
+    return True
+
+def is_valid_word(word):
+    if has_vowels(word):
+        if has_non_word_characters(word):
+            return True
+    
+    return False
+
 # load individual dictionary files from disk into a single dictionary in memory
 def load_dictionary(path, dictionary, letters):
     with codecs.open(path, encoding='utf-8') as file:
         for line in file:
             line = line.rstrip()
+            length = len(line)
             if not line:
                 break
             if line[0].isupper():
                 continue
-            if len(line) < 4:
+            if length < 4 or length > 26:
                 continue
             
             key = line.lower()
-            if has_vowels(key):
+            if is_valid_word(key):
                 if key in dictionary:
                     tup = dictionary[key]
                     level = tup[0]
