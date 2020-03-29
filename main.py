@@ -147,7 +147,7 @@ for word in center_matched:
     for letter in word:
         if found:
             if args.debug:
-                debug_log(output, "checking letter: '" + letter + "' in all letters: '" + all_letters + "'")
+                debug_log(output, "checking letter: '" + letter + "' from word: '" + word + "'")
             if letter not in all_letters:
                 found = False
                 break
