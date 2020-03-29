@@ -6,18 +6,18 @@ import os
 import codecs
 import glob
 
-# debug print function
-def debug_log(output, *args):
-    message = "DEBUG => "
-    for a in args:
-        message += a
-    print(message, file=output)
-
 def output_log(output, *args):
     message = ""
     for a in args:
         message += a
     print(message, file=output)
+
+# debug print function
+def debug_log(output, *args):
+    new_args = []
+    new_args.append("DEBUG => ")
+    new_args.append(*args)
+    output_log(output, *new_args)
 
 # Score points to increase your rating.
 # 4-letter words are worth 1 point each.
