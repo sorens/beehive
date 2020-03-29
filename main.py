@@ -76,7 +76,7 @@ def load_dictionary(path, dictionary, letters):
                     tup.append(score(key, letters))
                     dictionary[key] = tup
     
-    output_log(sys.stdout, "read dictionary: {:>30}, size: {:>9}".format(path, str(len(dictionary))))
+    output_log(sys.stdout, "{:<29s} loaded ({:>9})".format(path, str(len(dictionary))))
     return dictionary
 
 def load_dictionaries(path, letters):
@@ -112,10 +112,16 @@ parser.add_argument("--debug", help="enable debug output", action='store_true', 
 parser.add_argument("--path", type=str, help="location to output answers", required=False)
 parser.add_argument("--level", type=int, help="number of dictionary a matched word should appear in", required=False, default=0)
 parser.add_argument("--stdout", help="", action='store_true', default=False, required=False)
+parser.add_argument("--pangrams", help="List all pangram words", action='store_true', default=False, required=False)
 args = parser.parse_args()
 is_stdout = args.stdout
-letters = args.letters.rstrip().lower()
-center = args.center.rstrip().lower()
+letters = ""
+center = ""
+if args.letters != "":
+    letters = args.letters.rstrip().lower()
+if args.center != "":
+    center = args.center.rstrip().lower()
+
 output_path = ""
 if is_stdout == False:
     if args.path:
@@ -136,6 +142,18 @@ else:
     output = open(output_path, 'w')
 
 dictionary = load_dictionaries("word_files", all_letters)
+
+# handle --pangrams
+if args.pangrams:
+    words = {}
+    for word in dictionary:
+        if count_unique_letters_in_word(word) == 7:
+            words[word] = word
+
+    output_log(output, "{:<32s} {:>15d}".format("number of pangram words:", len(words)))
+    for word in words:
+        output_log(output, "{:<32s} {:>15s}".format("pangram word:", word))
+    exit()
 
 beehive(dictionary, letters, center, args.debug, output_path, level, is_stdout)
 
