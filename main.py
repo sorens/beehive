@@ -3,6 +3,7 @@
 import sys
 import argparse
 import os
+import codecs
 
 # debug print function
 def debug_log(output, *args):
@@ -49,10 +50,9 @@ def has_vowels(word):
 
 # load individual dictionary files from disk into a single dictionary in memory
 def load_dictionary(path, dictionary, letters):
-    with open(path, "r") as file:
-        while True:
-            line = file.readline().rstrip()
-            
+    with codecs.open(path, encoding='utf-8') as file:
+        for line in file:
+            line = line.rstrip()
             if not line:
                 break
             if line[0].isupper():
