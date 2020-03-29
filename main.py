@@ -25,19 +25,20 @@ def debug_log(output, *args):
 # Each puzzle includes at least one “pangram” which uses every letter. 
 # These are worth 7 extra points!
 def score(word, letters):
-    if len(word) == 4:
+    length = len(word)
+    if length == 4:
         return 1
-    elif len(word) >= 7:
-        all_used = True
-        for letter in letters:
-            if letter not in word:
-                all_used = False
-                break
-        
-        if all_used:
-            return len(word) + 7        
+    elif length >= 7:
+        if letters != "":
+            all_used = True
+            for letter in letters:
+                if letter not in word:
+                    all_used = False
+                    break
+            if all_used:
+                return length + 7
     
-    return len(word)
+    return length
 
 def has_vowels(word):
     vowels = "aeiouy"
