@@ -4,6 +4,7 @@ import sys
 import argparse
 import os
 import codecs
+import glob
 
 # debug print function
 def debug_log(output, *args):
@@ -73,7 +74,16 @@ def load_dictionary(path, dictionary, letters):
                     tup.append(1)
                     tup.append(score(key, letters))
                     dictionary[key] = tup
-        
+    
+    output_log(sys.stdout, "read dictionary: {:>30}, size: {:>9}".format(path, str(len(dictionary))))
+    return dictionary
+
+def load_dictionaries(path, letters):
+    dictionary = {}
+    word_files_path = os.path.join(path, "*.txt")
+    files = glob.glob(word_files_path)
+    for file in files:
+        dictionary = load_dictionary(file, dictionary, letters)
     return dictionary
 
 # Create words using letters from the hive.
@@ -116,18 +126,7 @@ if is_stdout:
 else:
     output = open(output_path, 'w')
 
-dictionary = {}
-dictionary = load_dictionary(os.path.join("word_files", "wordlist.txt"), dictionary, all_letters)
-dictionary = load_dictionary(os.path.join("word_files", "wordlist.txt"), dictionary, all_letters)
-dictionary = load_dictionary(os.path.join("word_files", "wordlist.10000.txt"), dictionary, all_letters)
-dictionary = load_dictionary(os.path.join("word_files", "words_alpha.txt"), dictionary, all_letters)
-dictionary = load_dictionary(os.path.join("word_files", "words.txt"), dictionary, all_letters)
-dictionary = load_dictionary(os.path.join("word_files", "usa2.txt"), dictionary, all_letters)
-dictionary = load_dictionary(os.path.join("word_files", "usa.txt"), dictionary, all_letters)
-dictionary = load_dictionary(os.path.join("word_files", "ukenglish.txt"), dictionary, all_letters)
-dictionary = load_dictionary(os.path.join("word_files", "english2.txt"), dictionary, all_letters)
-dictionary = load_dictionary(os.path.join("word_files", "english3.txt"), dictionary, all_letters)
-dictionary = load_dictionary(os.path.join("word_files", "engmix.txt"), dictionary, all_letters)
+dictionary = load_dictionaries("word_files", all_letters)
 
 beehive(dictionary, letters, center, args.debug, output_path, level, is_stdout)
 
