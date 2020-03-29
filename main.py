@@ -87,6 +87,14 @@ def load_dictionaries(path, letters):
         dictionary = load_dictionary(file, dictionary, letters)
     return dictionary
 
+def count_unique_letters_in_word(word):
+    letters = {}
+    if word != "":
+        for letter in word:
+            letters[letter] = letter
+
+    return len(letters)
+
 # Create words using letters from the hive.
 # Words must contain at least 4 letters.
 # Words must include the center letter.
