@@ -103,6 +103,10 @@ def load_dictionaries(path, letters):
     dictionary = {}
     word_files_path = os.path.join(path, "*.txt")
     files = glob.glob(word_files_path)
+    if len(files) == 0:
+        output_log(sys.stderr, "no word files found")
+        return
+
     for file in files:
         dictionary = load_dictionary(file, dictionary, letters)
     return dictionary
@@ -234,18 +238,17 @@ if args.command == "play":
         output = open(output_path, 'w')
 
     dictionary = load_dictionaries(args.words, all_letters)
-    beehive(dictionary, letters, center, args.debug, output_path, level, is_stdout)
+    if dictionary != None:
+        beehive(dictionary, letters, center, args.debug, output_path, level, is_stdout)
 
 elif args.command == "pangrams":
     output = sys.stdout
     dictionary = load_dictionaries(args.words, all_letters)
-    pangrams(dictionary)
+    if dictionary != None:
+        pangrams(dictionary)
 else:
-    print("failure")
-
-exit()
-
-
+    output_log(sys.stderr, "unknown command")
+    parser.print_help()
 
 output.close() 
 
