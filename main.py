@@ -202,6 +202,7 @@ parser.add_argument("--level", type=int, help="number of dictionary a matched wo
 parser.add_argument("--stdout", help="", action='store_true', default=False, required=False)
 parser.add_argument("--pangrams", help="List all pangram words", action='store_true', default=False, required=False)
 parser.add_argument("--command", help="which command to run (e.g. play, pangrams)", required=True)
+parser.add_argument("--words", help="directory of word files to use", required=False, default="word_files")
 args = parser.parse_args()
 is_stdout = args.stdout
 
@@ -232,12 +233,12 @@ if args.command == "play":
     else:
         output = open(output_path, 'w')
 
-    dictionary = load_dictionaries("word_files", all_letters)
+    dictionary = load_dictionaries(args.words, all_letters)
     beehive(dictionary, letters, center, args.debug, output_path, level, is_stdout)
 
 elif args.command == "pangrams":
     output = sys.stdout
-    dictionary = load_dictionaries("word_files", all_letters)
+    dictionary = load_dictionaries(args.words, all_letters)
     pangrams(dictionary)
 else:
     print("failure")
