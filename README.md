@@ -6,7 +6,7 @@ This command-line utility helps generate the words for combination of letters or
 > ./beehive --help
 usage: beehive [-h] [--letters LETTERS] [--center CENTER] [--debug]
                [--path PATH] [--level LEVEL] [--stdout] [--pangrams] --command
-               COMMAND
+               COMMAND [--words WORDS]
 
 beehive puzzle solver
 
@@ -20,4 +20,9 @@ optional arguments:
   --stdout
   --pangrams         List all pangram words
   --command COMMAND  which command to run (e.g. play, pangrams)
+  --words WORDS      directory of word files to use
 ```
+
+## Word lists
+
+This application does not come with the word list files you need. You can find several different sources for words in the language of your choice.
