@@ -26,3 +26,9 @@ optional arguments:
 ## Word lists
 
 This application does not come with the word list files you need. You can find several different sources for words in the language of your choice.
+
+Note: files should contain one word per line
+
+Some possible lists to use:
+
+* https://www.keithv.com/software/wlist/
