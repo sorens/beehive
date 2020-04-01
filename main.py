@@ -87,12 +87,18 @@ def load_dictionary(path, dictionary, letters):
                 if key in dictionary:
                     tup = dictionary[key]
                     level = tup[0]
+                    level = level+1
+                    if "missed.txt" in path:
+                        level = 100+level
                     word_score = tup[1]
-                    tup = [level+1, word_score]
+                    tup = [level, word_score]
                     dictionary[key] = tup
                 else:
+                    level = 1
+                    if "missed.txt" in path:
+                        level = 100
                     tup = []
-                    tup.append(1)
+                    tup.append(level)
                     tup.append(score(key, letters))
                     dictionary[key] = tup
     
