@@ -134,13 +134,14 @@ def count_unique_letters_in_word(word):
 # Our word list does not include words that are obscure, hyphenated, or proper nouns.
 # No cussing either, sorry.
 # Letters can be used more than once.
-def beehive(dictionary, letters, center_letter, debug, path, level, is_stdout):
+def beehive(dictionary, letters, center_letter, debug, path, level, is_stdout, output):
+    all_letters = letters + center_letter
     output_log(output, "{:<32s} {:>6s}".format("letters:", letters.upper()))
-    output_log(output, "{:<32s} {:>6s}".format("center letter:", center.upper()))
+    output_log(output, "{:<32s} {:>6s}".format("center letter:", center_letter.upper()))
 
     center_matched = {}
     for word in dictionary:
-        if center in word:
+        if center_letter in word:
             center_matched[word] = dictionary[word]
 
     output_log(output, "{:<32s} {:>6s}".format("words checked:", str(len(dictionary.keys()))))
@@ -151,19 +152,19 @@ def beehive(dictionary, letters, center_letter, debug, path, level, is_stdout):
         found = True
         for letter in word:
             if found:
-                if args.debug:
+                if debug:
                     debug_log(output, "checking letter: '" + letter + "' from word: '" + word + "'")
                 if letter not in all_letters:
                     found = False
                     break
         
         if found:
-            if args.debug:
+            if debug:
                 debug_log(output, "" + word + " ADDED")
             matched[word] = center_matched[word]
             found = False
         else:
-            if args.debug:
+            if debug:
                 debug_log(output, "" + word + " SKIPPED")
 
     output_log(output, "{:<32s} {:>6s}".format("words matched with all letters:", str(len(matched))))
@@ -196,7 +197,7 @@ def beehive(dictionary, letters, center_letter, debug, path, level, is_stdout):
         for word in h[key]:
             output_log(output, "{:3}{:<29s} {:>4d} {:>4d}".format("=> ", word, dictionary[word][SCORE], dictionary[word][LEVEL]))
 
-def pangrams(dictionary):
+def pangrams(dictionary, output):
     words = {}
     for word in dictionary:
         if count_unique_letters_in_word(word) == 7:
@@ -206,60 +207,63 @@ def pangrams(dictionary):
     for word in words:
         output_log(output, "{:<32s} {:>15s}".format("pangram word:", word))
 
-parser = argparse.ArgumentParser(description='beehive puzzle solver')
-parser.add_argument("--letters", type=str, help="non-center letters from beehive board", required=False, default="")
-parser.add_argument("--center", type=str, help="center letter from beehive board", required=False, default="")
-parser.add_argument("--debug", help="enable debug output", action='store_true', default=False, required=False)
-parser.add_argument("--path", type=str, help="location to output answers", required=False)
-parser.add_argument("--level", type=int, help="number of dictionary a matched word should appear in", required=False, default=0)
-parser.add_argument("--stdout", help="", action='store_true', default=False, required=False)
-parser.add_argument("--pangrams", help="List all pangram words", action='store_true', default=False, required=False)
-parser.add_argument("--command", help="which command to run (e.g. play, pangrams)", required=True)
-parser.add_argument("--words", help="directory of word files to use", required=False, default="word_files")
-args = parser.parse_args()
-is_stdout = args.stdout
+def main():
+    parser = argparse.ArgumentParser(description='beehive puzzle solver')
+    parser.add_argument("--letters", type=str, help="non-center letters from beehive board", required=False, default="")
+    parser.add_argument("--center", type=str, help="center letter from beehive board", required=False, default="")
+    parser.add_argument("--debug", help="enable debug output", action='store_true', default=False, required=False)
+    parser.add_argument("--path", type=str, help="location to output answers", required=False)
+    parser.add_argument("--level", type=int, help="number of dictionary a matched word should appear in", required=False, default=0)
+    parser.add_argument("--stdout", help="", action='store_true', default=False, required=False)
+    parser.add_argument("--pangrams", help="List all pangram words", action='store_true', default=False, required=False)
+    parser.add_argument("--command", help="which command to run (e.g. play, pangrams)", required=True)
+    parser.add_argument("--words", help="directory of word files to use", required=False, default="word_files")
+    args = parser.parse_args()
+    is_stdout = args.stdout
 
-output_path = ""
-if is_stdout == False:
-    if args.path:
-        output_path = args.path.rstrip().lower()
-    else:
-        is_stdout = True
+    output_path = ""
+    if is_stdout == False:
+        if args.path:
+            output_path = args.path.rstrip().lower()
+        else:
+            is_stdout = True
 
-if is_stdout == False:
-    output_log(sys.stdout, "behive running...")
+    if is_stdout == False:
+        output_log(sys.stdout, "behive running...")
 
-all_letters = ""
-# check which command we're running
-if args.command == "play":
-    letters = ""
-    center = ""
-    if args.letters != "":
-        letters = args.letters.rstrip().lower()
-    if args.center != "":
-        center = args.center.rstrip().lower()
-    all_letters = letters + center
-    level = args.level
-    output_path = os.path.join(output_path, all_letters + "." + "txt")    
-    if is_stdout:
+    all_letters = ""
+    # check which command we're running
+    if args.command == "play":
+        letters = ""
+        center = ""
+        if args.letters != "":
+            letters = args.letters.rstrip().lower()
+        if args.center != "":
+            center = args.center.rstrip().lower()
+        all_letters = letters + center
+        level = args.level
+        output_path = os.path.join(output_path, all_letters + "." + "txt")    
+        if is_stdout:
+            output = sys.stdout
+        else:
+            output = open(output_path, 'w')
+
+        dictionary = load_dictionaries(args.words, all_letters)
+        if dictionary != None:
+            beehive(dictionary, letters, center, args.debug, output_path, level, is_stdout, output)
+
+    elif args.command == "pangrams":
         output = sys.stdout
+        dictionary = load_dictionaries(args.words, all_letters)
+        if dictionary != None:
+            pangrams(dictionary, output)
     else:
-        output = open(output_path, 'w')
+        output_log(sys.stderr, "unknown command")
+        parser.print_help()
 
-    dictionary = load_dictionaries(args.words, all_letters)
-    if dictionary != None:
-        beehive(dictionary, letters, center, args.debug, output_path, level, is_stdout)
+    output.close() 
 
-elif args.command == "pangrams":
-    output = sys.stdout
-    dictionary = load_dictionaries(args.words, all_letters)
-    if dictionary != None:
-        pangrams(dictionary)
-else:
-    output_log(sys.stderr, "unknown command")
-    parser.print_help()
+    if is_stdout == False:
+        output_log(sys.stdout, "beehive finished")
 
-output.close() 
-
-if is_stdout == False:
-    output_log(sys.stdout, "beehive finished")
+main()
