@@ -6,6 +6,9 @@ import os
 import codecs
 import glob
 
+LEVEL = 0
+SCORE = 1
+
 def output_log(output, *args):
     message = ""
     for a in args:
@@ -86,11 +89,11 @@ def load_dictionary(path, dictionary, letters):
             if is_valid_word(key):
                 if key in dictionary:
                     tup = dictionary[key]
-                    level = tup[0]
+                    level = tup[LEVEL]
                     level = level+1
                     if "missed.txt" in path:
                         level = 100+level
-                    word_score = tup[1]
+                    word_score = tup[SCORE]
                     tup = [level, word_score]
                     dictionary[key] = tup
                 else:
@@ -170,9 +173,9 @@ def beehive(dictionary, letters, center_letter, debug, path, level, is_stdout):
     likely_words = {}
     total_score = 0
     for word in matched:
-        if level == 0 or matched[word][0] >= level:
+        if level == 0 or matched[word][LEVEL] >= level:
             likely_words[word] = matched[word]
-            total_score += matched[word][1]
+            total_score += matched[word][SCORE]
 
     output_log(output, "{:<32s} {:>6s}".format("likely good word:", str(len(likely_words))))
     output_log(output, "{:<32s} {:>6s}".format("total score:", str(total_score)))
@@ -182,8 +185,8 @@ def beehive(dictionary, letters, center_letter, debug, path, level, is_stdout):
         h[letter] = []
 
     sorted_answers = []
-    # sort by length
-    for word in sorted(likely_words, key=lambda word: len(word), reverse=True):
+    # sort by level
+    for word in sorted(likely_words, key=lambda word: likely_words[word][LEVEL], reverse=True):
         sorted_answers.append(word)
         h[word[0]].append(word)
 
@@ -191,7 +194,7 @@ def beehive(dictionary, letters, center_letter, debug, path, level, is_stdout):
         output_log(output, "{:21s} \"{:<1s}\"        {:>4s} {:>4s}".format("words that begin with", key.upper(), "score", "level"))
         output_log(output, "{:<32s} {:>4s} {:>4s}".format("-------------------------", "-----", "-----"))
         for word in h[key]:
-            output_log(output, "{:3}{:<29s} {:>4d} {:>4d}".format("=> ", word, dictionary[word][1], dictionary[word][0]))
+            output_log(output, "{:3}{:<29s} {:>4d} {:>4d}".format("=> ", word, dictionary[word][SCORE], dictionary[word][LEVEL]))
 
 def pangrams(dictionary):
     words = {}
