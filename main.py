@@ -81,14 +81,16 @@ def is_valid_word(word):
     return False
 
 # load individual dictionary files from disk into a single dictionary in memory
-def load_dictionary(path, dictionary, letters):
+
+
+def load_dictionary(path, dictionary, letters, ignore_capital):
     with codecs.open(path, encoding='utf-8') as file:
         for line in file:
             line = line.rstrip()
             length = len(line)
             if not line:
                 break
-            if line[0].isupper():
+            if ignore_capital and line[0].isupper():
                 continue
             if length < 4 or length > 26:
                 continue
@@ -127,7 +129,7 @@ def load_dictionaries(path, letters):
         return
 
     for file in files:
-        dictionary = load_dictionary(file, dictionary, letters)
+        dictionary = load_dictionary(file, dictionary, letters, True)
     return dictionary
 
 
@@ -232,6 +234,15 @@ def pangrams(dictionary, output):
     for word in words:
         output_log(output, "{:<32s} {:>15s}".format("pangram word:", word))
 
+
+def analyze(dictionary, output, answer_file):
+    words = {}
+    words = load_dictionary(answer_file, words, "", False)
+
+    for word in words:
+        output_log(output, "{:<32s} {:>15s}".format("word:", word))
+
+
 def main():
     parser = argparse.ArgumentParser(description='beehive puzzle solver')
     parser.add_argument("--letters", type=str,
@@ -251,6 +262,9 @@ def main():
     parser.add_argument(
         "--command", help="which command to run (e.g. play, pangrams)", required=True)
     parser.add_argument("--words", help="directory of word files to use",
+                        required=False, default="word_files")
+    parser.add_argument(
+        "--answer", help="location of an answer file", required=False, default="")
     args = parser.parse_args()
     is_stdout = args.stdout
 
@@ -291,6 +305,11 @@ def main():
         dictionary = load_dictionaries(args.words, all_letters)
         if dictionary != None:
             pangrams(dictionary, output)
+    elif args.command == "analyze":
+        output = sys.stdout
+        dictionary = load_dictionaries(args.words, all_letters)
+        if dictionary != None:
+            analyze(dictionary, output, args.answer)
     else:
         output_log(sys.stderr, "unknown command")
         parser.print_help()
