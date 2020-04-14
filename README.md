@@ -32,3 +32,8 @@ Note: files should contain one word per line
 Some possible lists to use:
 
 * https://www.keithv.com/software/wlist/
+* https://github.com/dwyl/english-words
+* https://github.com/first20hours/google-10000-english
+* http://www.gwicks.net/dictionaries.htm
+* https://www.mit.edu/~ecprice/wordlist.10000
+* https://raw.githubusercontent.com/eneko/data-repository/master/data/words.txt
